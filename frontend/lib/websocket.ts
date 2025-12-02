@@ -8,6 +8,7 @@ import {
   WSSessionStarted,
   WSError,
 } from '@/types';
+import { toast } from 'sonner'; // Import toast
 
 const WS_URL = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8000';
 
@@ -29,6 +30,7 @@ export class TranscriptionWebSocket {
 
         this.ws.onopen = () => {
           console.log('WebSocket connected');
+          toast.success('WebSocket connected for transcription.');
           this.reconnectAttempts = 0;
           resolve();
         };
@@ -41,18 +43,22 @@ export class TranscriptionWebSocket {
             }
           } catch (error) {
             console.error('Failed to parse WebSocket message:', error);
+            toast.error('Received malformed message from server.');
           }
         };
 
         this.ws.onerror = (error) => {
           console.error('WebSocket error:', error);
+          toast.error('WebSocket connection failed. Please try again.');
           reject(new Error('WebSocket connection failed'));
         };
 
         this.ws.onclose = () => {
           console.log('WebSocket disconnected');
+          toast.info('WebSocket disconnected.');
         };
       } catch (error) {
+        toast.error('Failed to establish WebSocket connection.');
         reject(error);
       }
     });
@@ -63,6 +69,7 @@ export class TranscriptionWebSocket {
       this.ws.send(JSON.stringify(message));
     } else {
       console.error('WebSocket is not connected');
+      toast.error('WebSocket is not connected. Cannot send message.');
       throw new Error('WebSocket is not connected');
     }
   }

@@ -1,4 +1,6 @@
+'use client' // Add this directive for client-side interactivity
 import { AudioRecorder } from '@/components/AudioRecorder';
+import { toast } from 'sonner'; // Import toast
 
 export default function Home() {
   return (
@@ -11,6 +13,9 @@ export default function Home() {
       </div>
 
       <AudioRecorder />
+
+      <div className="flex justify-center">
+      </div>
     </div>
   );
 }
