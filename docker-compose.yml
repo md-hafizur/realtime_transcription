@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    container_name: transcription_db
+    environment:
+      POSTGRES_USER: transcribe_user
+      POSTGRES_PASSWORD: transcribe_pass
+      POSTGRES_DB: transcription_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/migrations/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U transcribe_user -d transcription_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: transcription_backend
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://transcribe_user:transcribe_pass@db:5432/transcription_db
+      VOSK_MODEL_PATH: /app/models_data/vosk-model-small-en-us-0.15
+      DEBUG: "True"
+    volumes:
+      - ./backend:/app
+      - vosk_models:/app/models_data
+    depends_on:
+      db:
+        condition: service_healthy
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  # Frontend (Next.js) - Will be added in Phase 2
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #   container_name: transcription_frontend
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     NEXT_PUBLIC_API_URL: http://localhost:8000
+  #     NEXT_PUBLIC_WS_URL: ws://localhost:8000
+  #   volumes:
+  #     - ./frontend:/app
+  #     - /app/node_modules
+  #   depends_on:
+  #     - backend
+
+volumes:
+  postgres_data:
+  vosk_models:

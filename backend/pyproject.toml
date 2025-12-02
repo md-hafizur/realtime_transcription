@@ -1,0 +1,28 @@
+[project]
+name = "fastapi-project"
+version = "0.1.0"
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "python-multipart",
+    "websockets",
+    "sqlalchemy",
+    "psycopg2-binary",
+    "alembic",
+    "pydantic",
+    "pydantic-settings",
+    "python-dotenv",
+    "vosk",
+    "numpy",
+    "scipy",
+    "python-json-logger",
+    "aiofiles",
+    "pytest",
+    "pytest-asyncio",
+    "httpx",
+    "pytest-cov",
+    "python-jose",
+]
+
+[tool.setuptools]
+packages = ["app"]
