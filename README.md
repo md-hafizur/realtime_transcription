@@ -120,7 +120,7 @@ If you prefer to run the services manually without Docker.
     ```
 
 3.  **Set up environment variables**:
-    Create a file named `.env.local` in the `frontend-next` directory.
+    Create a file named `.env.local` in the `frontend` directory.
     ```env
     # frontend-next/.env.local
     NEXT_PUBLIC_WS_URL=ws://localhost:8000
@@ -140,9 +140,7 @@ If you prefer to run the services manually without Docker.
 ```
 .
 ├── backend/         # FastAPI backend source code
-├── docs/            # Project documentation
-├── frontend-next/   # Next.js frontend source code
-├── scripts/         # Helper scripts (e.g., model download)
+├── frontend/   # Next.js frontend source code
 ├── docker-compose.yml
 └── README.md
 ```
