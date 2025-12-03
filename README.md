@@ -111,7 +111,7 @@ If you prefer to run the services manually without Docker.
 
 1.  **Navigate to the frontend directory**:
     ```bash
-    cd frontend-next
+    cd frontend
     ```
 
 2.  **Install dependencies**:
@@ -122,7 +122,7 @@ If you prefer to run the services manually without Docker.
 3.  **Set up environment variables**:
     Create a file named `.env.local` in the `frontend` directory.
     ```env
-    # frontend-next/.env.local
+    # frontend/.env.local
     NEXT_PUBLIC_WS_URL=ws://localhost:8000
     NEXT_PUBLIC_API_URL=http://localhost:8000
     ```
