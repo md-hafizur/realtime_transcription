@@ -8,6 +8,18 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Calendar, Clock, FileText, Trash2 } from 'lucide-react';
 import { formatDate, formatDuration } from '@/lib/utils';
+import { toast } from 'sonner';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 export default function SessionDetailPage() {
   const params = useParams();
@@ -15,6 +27,7 @@ export default function SessionDetailPage() {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   useEffect(() => {
     if (params.id) {
@@ -36,17 +49,22 @@ export default function SessionDetailPage() {
     }
   };
 
-  const handleDelete = async () => {
-    if (!session || !confirm('Are you sure you want to delete this session?')) {
-      return;
-    }
+  const handleDeleteInitiate = () => {
+    setIsDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!session) return;
 
     try {
       await api.deleteSession(session.id);
+      toast.success('Session successfully deleted.');
       router.push('/sessions');
     } catch (err) {
       console.error('Failed to delete session:', err);
-      alert('Failed to delete session');
+      toast.error('Failed to delete session.');
+    } finally {
+      setIsDeleteDialogOpen(false); // Close dialog
     }
   };
 
@@ -83,10 +101,27 @@ export default function SessionDetailPage() {
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back
         </Button>
-        <Button variant="destructive" onClick={handleDelete}>
-          <Trash2 className="w-4 h-4 mr-2" />
-          Delete
-        </Button>
+        <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+          <AlertDialogTrigger asChild>
+            <Button variant="destructive" onClick={handleDeleteInitiate}>
+              <Trash2 className="w-4 h-4 mr-2" />
+              Delete
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete your
+                session and remove its data from our servers.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={confirmDelete}>Continue</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
 
       <Card>

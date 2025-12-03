@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
+import { toast } from 'sonner';
 import { Mic, Square, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -44,6 +45,7 @@ export function AudioRecorder() {
 
       // Start audio recording
       await startRecording();
+      toast.success('Audio transcription started.');
     } catch (error) {
       console.error('Failed to start recording:', error);
     }
@@ -52,7 +54,7 @@ export function AudioRecorder() {
   const handleStopRecording = () => {
     // Stop recording
     stopRecording();
-
+    toast.info('Audio transcription stopped.');
     // Stop transcription session
     stopSession();
 

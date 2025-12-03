@@ -29,8 +29,6 @@ export class TranscriptionWebSocket {
         this.ws = new WebSocket(`${WS_URL}/ws/transcribe`);
 
         this.ws.onopen = () => {
-          console.log('WebSocket connected');
-          toast.success('WebSocket connected for transcription.');
           this.reconnectAttempts = 0;
           resolve();
         };
@@ -55,7 +53,6 @@ export class TranscriptionWebSocket {
 
         this.ws.onclose = () => {
           console.log('WebSocket disconnected');
-          toast.info('WebSocket disconnected.');
         };
       } catch (error) {
         toast.error('Failed to establish WebSocket connection.');
@@ -69,8 +66,7 @@ export class TranscriptionWebSocket {
       this.ws.send(JSON.stringify(message));
     } else {
       console.error('WebSocket is not connected');
-      toast.error('WebSocket is not connected. Cannot send message.');
-      throw new Error('WebSocket is not connected');
+      toast.error('Cannot send message: WebSocket is not connected.');
     }
   }
 

@@ -23,7 +23,7 @@ export default function RootLayout({
         <main className="container mx-auto px-4 py-8">
           {children}
         </main>
-        <Toaster /> {/* Add Toaster component here */}
+        <Toaster position="top-right" /> {/* Add Toaster component here */}
       </body>
     </html>
   )

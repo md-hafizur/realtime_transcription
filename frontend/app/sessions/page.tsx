@@ -6,11 +6,23 @@ import { api } from '@/lib/api';
 import { SessionList } from '@/components/SessionList';
 import { Button } from '@/components/ui/button';
 import { RefreshCw } from 'lucide-react';
+import { toast } from 'sonner';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 export default function SessionsPage() {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [sessionToDelete, setSessionToDelete] = useState<string | null>(null);
 
   const fetchSessions = async () => {
     try {
@@ -30,17 +42,22 @@ export default function SessionsPage() {
     fetchSessions();
   }, []);
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this session?')) {
-      return;
-    }
+  const handleDeleteInitiate = (id: string) => {
+    setSessionToDelete(id);
+  };
+
+  const confirmDelete = async () => {
+    if (!sessionToDelete) return; // Should not happen
 
     try {
-      await api.deleteSession(id);
-      setSessions((prev) => prev.filter((s) => s.id !== id));
+      await api.deleteSession(sessionToDelete);
+      setSessions((prev) => prev.filter((s) => s.id !== sessionToDelete));
+      toast.success('Session successfully deleted.');
     } catch (err) {
       console.error('Failed to delete session:', err);
-      alert('Failed to delete session');
+      toast.error('Failed to delete session.');
+    } finally {
+      setSessionToDelete(null); // Close dialog
     }
   };
 
@@ -72,8 +89,24 @@ export default function SessionsPage() {
       )}
 
       {!loading && !error && (
-        <SessionList sessions={sessions} onDelete={handleDelete} />
+        <SessionList sessions={sessions} onDelete={handleDeleteInitiate} />
       )}
+
+      <AlertDialog open={!!sessionToDelete} onOpenChange={setSessionToDelete}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete your
+              session and remove its data from our servers.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete}>Continue</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
