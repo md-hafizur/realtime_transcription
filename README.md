@@ -76,33 +76,34 @@ If you prefer to run the services manually without Docker.
     cd backend
     ```
 
-2.  **Create and activate a virtual environment**:
-    ```bash
-    uv venv
-    source .venv/bin/activate  # On Windows use `.venv\Scripts\activate`
-    ```
-
-3.  **Install dependencies**:
+2.  **Install dependencies**:
+    This command installs the packages specified in `pyproject.toml` (and `uv.lock` if it exists).
     ```bash
     uv sync
     ```
 
-4.  **Set up environment variables**:
+3.  **Set up environment variables**:
     Create a `.env` file in the `backend` directory. You'll need to provide the database URL. For a local Postgres instance, it would look like this:
     ```env
     # backend/.env
     DATABASE_URL=postgresql://transcribe_user:transcribe_pass@localhost:5432/transcription_db
     ```
 
-5.  **Database Migrations**:
-    Ensure your PostgreSQL server is running and the database exists. Then run Alembic migrations.
-    ```bash
-    alembic upgrade head
-    ```
+4.  **Database Migrations**:
+    Alembic is used for database migrations. Ensure your PostgreSQL server is running and the database exists.
+    - To create a new migration:
+      ```bash
+      alembic revision --autogenerate -m "Add description for your migration"
+      ```
+    - To apply pending migrations:
+      ```bash
+      alembic upgrade head
+      ```
 
-6.  **Run the server**:
+5.  **Run the server**:
+    Use `uv run` to start the FastAPI server.
     ```bash
-    uvicorn app.main:app --reload
+    uv run uvicorn app.main:app --reload
     ```
     The API will be available at `http://localhost:8000`.
 
